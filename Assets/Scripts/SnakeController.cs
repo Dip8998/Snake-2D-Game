@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SnakeController : MonoBehaviour
 {
@@ -17,7 +18,11 @@ public class SnakeController : MonoBehaviour
     private void Start()
     {
         tails = new List<Transform>();
-        tails.Add(this.transform);
+
+        if (this.transform != null)
+        {
+            tails.Add(this.transform);
+        }
     }
     private void Update()
     {
@@ -85,17 +90,50 @@ public class SnakeController : MonoBehaviour
         }
     }
 
-    private void InstantiateTail()
+    private void InstantiateTail(int count = 1)
     {
-        Transform tail =   Instantiate(this.tailPreFab);
-        tail.position = tails[tails.Count -1].position;
-        tails.Add(tail);
+        for (int i = 0; i < count; i++)
+        {
+            Transform tail = Instantiate(this.tailPreFab);
+            tail.position = tails[tails.Count - 1].position;
+            tails.Add(tail);
+        }
+    }
+    private void DecreaseTail(int count = 1)
+    {
+        for (int i = 0; i < count && tails.Count > 1; i++)
+        {
+            if(tails.Count > 2)
+            {
+                Transform lastTail = tails[tails.Count - 1];
+                tails.RemoveAt(tails.Count - 1);
+                Destroy(lastTail.gameObject);
+            }
+        }
+    }
+    public int GetSnakeSize()
+    {
+        if (tails == null)
+        {
+            return 0; 
+        }
+        return tails.Count;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.CompareTag("Food"))
+        if(collision.tag == "MassGainer")
         {
-            InstantiateTail();
+            Destroy(collision.gameObject);
+            InstantiateTail();   
+        }
+        if(collision.tag == "MassBurner")
+        {
+            Destroy(collision.gameObject);
+            DecreaseTail();
+        }
+        if(collision.tag == "Tail")
+        {
+            SceneManager.LoadScene(0);
         }
     }
 }
