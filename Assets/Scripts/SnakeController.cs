@@ -12,7 +12,7 @@ public class SnakeController : MonoBehaviour
     [SerializeField] private GameObject rightWall;
     [SerializeField] private GameObject shield;
     [SerializeField] private Transform tailPrefab;
-    
+    [SerializeField] private bool isSnake1;
 
     private Vector2 snakeDir = Vector2.right;
     private List<Transform> tails;
@@ -42,10 +42,20 @@ public class SnakeController : MonoBehaviour
 
     private Vector2 GetInputDirection()
     {
-        if (Input.GetKey(KeyCode.W)) return Vector2.up;
-        if (Input.GetKey(KeyCode.S)) return Vector2.down;
-        if (Input.GetKey(KeyCode.A)) return Vector2.left;
-        if (Input.GetKey(KeyCode.D)) return Vector2.right;
+        if (isSnake1)
+        {
+            if (Input.GetKey(KeyCode.W)) return Vector2.up;
+            if (Input.GetKey(KeyCode.S)) return Vector2.down;
+            if (Input.GetKey(KeyCode.A)) return Vector2.left;
+            if (Input.GetKey(KeyCode.D)) return Vector2.right;
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.UpArrow)) return Vector2.up;
+            if (Input.GetKey(KeyCode.DownArrow)) return Vector2.down;
+            if (Input.GetKey(KeyCode.LeftArrow)) return Vector2.left;
+            if (Input.GetKey(KeyCode.RightArrow)) return Vector2.right;
+        }
         return Vector2.zero;
     }
 
@@ -184,6 +194,12 @@ public class SnakeController : MonoBehaviour
             case "SpeedBoost":
                 Destroy(collision.gameObject);
                 StartCoroutine(ActivateSpeedBoost(speedBoostDuration));
+                break;
+            case "Player2":
+                if(hasShield == false)
+                {
+                    SceneManager.LoadScene(1);
+                }
                 break;
         }
     }
