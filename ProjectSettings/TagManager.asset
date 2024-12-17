@@ -8,6 +8,9 @@ TagManager:
   - Tail
   - MassGainer
   - MassBurner
+  - Shield
+  - ScoreBoost
+  - SpeedBoost
   layers:
   - Default
   - TransparentFX

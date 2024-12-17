@@ -5,17 +5,23 @@ using UnityEngine.SceneManagement;
 
 public class SnakeController : MonoBehaviour
 {
+    [SerializeField] private ScoreController scoreController;
     [SerializeField] private GameObject upperWall;
     [SerializeField] private GameObject bottomWall;
     [SerializeField] private GameObject leftWall;
     [SerializeField] private GameObject rightWall;
+    [SerializeField] private GameObject shield;
     [SerializeField] private Transform tailPrefab;
+    
 
     private Vector2 snakeDir = Vector2.right;
     private List<Transform> tails;
     private bool isWrapping = false;
     private bool canChangeDir = true;
-
+    private bool hasShield = false;
+    private bool hasScoreBooster = false;
+    private float speedBoostDuration = 5f;
+    
     private void Start()
     {
         tails = new List<Transform> { transform };
@@ -58,10 +64,10 @@ public class SnakeController : MonoBehaviour
         }
 
         transform.position = new Vector3(
-            Mathf.Round(transform.position.x) + snakeDir.x,
-            Mathf.Round(transform.position.y) + snakeDir.y,
-            0.0f
-        );
+           Mathf.Round(transform.position.x) + snakeDir.x,
+           Mathf.Round(transform.position.y) + snakeDir.y,
+           0.0f
+       );
     }
 
     private void HandleWrapping()
@@ -71,7 +77,7 @@ public class SnakeController : MonoBehaviour
         float topLimit = upperWall.transform.position.y - 0.5f;
         float bottomLimit = bottomWall.transform.position.y + 0.5f;
 
-        if(!isWrapping)
+        if (!isWrapping)
         {
             if (transform.position.x > rightLimit)
             {
@@ -92,7 +98,7 @@ public class SnakeController : MonoBehaviour
             {
                 transform.position = new Vector2(transform.position.x, topLimit);
                 isWrapping = true;
-            }     
+            }
         }
         if (isWrapping)
         {
@@ -124,20 +130,60 @@ public class SnakeController : MonoBehaviour
         return tails != null ? tails.Count : 0;
     }
 
+    private IEnumerator ActivateShield(float delay)
+    {
+        hasShield = true;
+        shield.gameObject.SetActive(true);
+        yield return new WaitForSeconds(delay);
+        hasShield = false;
+        shield.gameObject.SetActive(false);
+    }
+
+    private IEnumerator ActivateSpeedBoost(float duration)
+    {
+        Time.fixedDeltaTime = 0.03f;
+        yield return new WaitForSeconds(duration);
+        Time.fixedDeltaTime = 0.07f; 
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         switch (collision.tag)
         {
             case "MassGainer":
-                Destroy(collision.gameObject);
-                ModifyTail(1, true);
+                if (hasScoreBooster == false)
+                {
+                    Destroy(collision.gameObject);
+                    ModifyTail(1, true);
+                    scoreController.IncreaseScore(10);
+                }
                 break;
             case "MassBurner":
-                Destroy(collision.gameObject);
-                ModifyTail(1, false);
+                if (hasScoreBooster == false)
+                {
+                    Destroy(collision.gameObject);
+                    ModifyTail(1, false);
+                    scoreController.DecreaseScore(10);
+                }
                 break;
             case "Tail":
-                SceneManager.LoadScene(0);
+                if (hasShield == false)
+                {
+                    SceneManager.LoadScene(0);
+                    Time.fixedDeltaTime = 0.07f;
+                }
+                break;
+            case "Shield":
+                Destroy(collision.gameObject);
+                StartCoroutine(ActivateShield(5f));
+                break;
+            case "ScoreBoost":
+                Destroy(collision.gameObject);
+                scoreController.ActivateScoreBooster(5f);
+                break;
+            case "SpeedBoost":
+                Destroy(collision.gameObject);
+                StartCoroutine(ActivateSpeedBoost(speedBoostDuration));
                 break;
         }
     }
