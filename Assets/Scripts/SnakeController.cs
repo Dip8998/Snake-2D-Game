@@ -9,80 +9,90 @@ public class SnakeController : MonoBehaviour
     [SerializeField] private GameObject bottomWall;
     [SerializeField] private GameObject leftWall;
     [SerializeField] private GameObject rightWall;
-    [SerializeField] private Transform tailPreFab;
+    [SerializeField] private Transform tailPrefab;
 
     private Vector2 snakeDir = Vector2.right;
     private List<Transform> tails;
     private bool isWrapping = false;
+    private bool canChangeDir = true;
 
     private void Start()
     {
-        tails = new List<Transform>();
-
-        if (this.transform != null)
-        {
-            tails.Add(this.transform);
-        }
+        tails = new List<Transform> { transform };
     }
+
     private void Update()
     {
-        if (!isWrapping)
+        if (canChangeDir && !isWrapping)
         {
-            if (Input.GetKey(KeyCode.W) && snakeDir != Vector2.down)
+            Vector2 newDir = GetInputDirection();
+            if (newDir != Vector2.zero && newDir != -snakeDir)
             {
-                snakeDir = Vector2.up;
-            }
-            else if (Input.GetKey(KeyCode.S) && snakeDir != Vector2.up)
-            {
-                snakeDir = Vector2.down;
-            }
-            else if (Input.GetKey(KeyCode.A) && snakeDir != Vector2.right)
-            {
-                snakeDir = Vector2.left;
-            }
-            else if (Input.GetKey(KeyCode.D) && snakeDir != Vector2.left)
-            {
-                snakeDir = Vector2.right;
+                snakeDir = newDir;
+                canChangeDir = false;
             }
         }
+    }
+
+    private Vector2 GetInputDirection()
+    {
+        if (Input.GetKey(KeyCode.W)) return Vector2.up;
+        if (Input.GetKey(KeyCode.S)) return Vector2.down;
+        if (Input.GetKey(KeyCode.A)) return Vector2.left;
+        if (Input.GetKey(KeyCode.D)) return Vector2.right;
+        return Vector2.zero;
     }
 
     private void FixedUpdate()
-    {   
-        for(int i = tails.Count - 1; i > 0; i--)
+    {
+        MoveSnake();
+        HandleWrapping();
+        canChangeDir = true;
+    }
+
+    private void MoveSnake()
+    {
+        for (int i = tails.Count - 1; i > 0; i--)
         {
-            tails[i].position = tails[i-1].position;
+            tails[i].position = tails[i - 1].position;
         }
 
+        transform.position = new Vector3(
+            Mathf.Round(transform.position.x) + snakeDir.x,
+            Mathf.Round(transform.position.y) + snakeDir.y,
+            0.0f
+        );
+    }
 
-        this.transform.position = new Vector3(
-        Mathf.Round(this.transform.position.x) + snakeDir.x,
-        Mathf.Round(this.transform.position.y) + snakeDir.y,
-        0.0f
-            );
+    private void HandleWrapping()
+    {
+        float rightLimit = rightWall.transform.position.x - 0.5f;
+        float leftLimit = leftWall.transform.position.x + 0.5f;
+        float topLimit = upperWall.transform.position.y - 0.5f;
+        float bottomLimit = bottomWall.transform.position.y + 0.5f;
 
-        if (!isWrapping)
+        if(!isWrapping)
         {
-            if (transform.position.x > rightWall.transform.position.x - 1f)
+            if (transform.position.x > rightLimit)
             {
-                transform.position = new Vector2(leftWall.transform.position.x + 1f, transform.position.y);
+                transform.position = new Vector2(leftLimit, transform.position.y);
                 isWrapping = true;
             }
-            else if (transform.position.x < leftWall.transform.position.x + 1f)
+            else if (transform.position.x < leftLimit)
             {
-                transform.position = new Vector2(rightWall.transform.position.x - 1f, transform.position.y);
+                transform.position = new Vector2(rightLimit, transform.position.y);
                 isWrapping = true;
             }
-            else if (transform.position.y > upperWall.transform.position.y - 0.6f)
+            else if (transform.position.y > topLimit)
             {
-                transform.position = new Vector2(transform.position.x, bottomWall.transform.position.y + 1f);
+                transform.position = new Vector2(transform.position.x, bottomLimit);
                 isWrapping = true;
             }
-            else if (transform.position.y < bottomWall.transform.position.y + 0.6f)
+            else if (transform.position.y < bottomLimit)
             {
-                transform.position = new Vector2(transform.position.x, upperWall.transform.position.y - 1f);
+                transform.position = new Vector2(transform.position.x, topLimit);
                 isWrapping = true;
-            }
+            }     
         }
         if (isWrapping)
         {
@@ -90,20 +100,17 @@ public class SnakeController : MonoBehaviour
         }
     }
 
-    private void InstantiateTail(int count = 1)
+    private void ModifyTail(int count, bool add)
     {
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count && (add || tails.Count > 1); i++)
         {
-            Transform tail = Instantiate(this.tailPreFab);
-            tail.position = tails[tails.Count - 1].position;
-            tails.Add(tail);
-        }
-    }
-    private void DecreaseTail(int count = 1)
-    {
-        for (int i = 0; i < count && tails.Count > 1; i++)
-        {
-            if(tails.Count > 2)
+            if (add)
+            {
+                Transform tail = Instantiate(tailPrefab);
+                tail.position = tails[tails.Count - 1].position;
+                tails.Add(tail);
+            }
+            else if (tails.Count > 1)
             {
                 Transform lastTail = tails[tails.Count - 1];
                 tails.RemoveAt(tails.Count - 1);
@@ -111,29 +118,27 @@ public class SnakeController : MonoBehaviour
             }
         }
     }
+
     public int GetSnakeSize()
     {
-        if (tails == null)
-        {
-            return 0; 
-        }
-        return tails.Count;
+        return tails != null ? tails.Count : 0;
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "MassGainer")
+        switch (collision.tag)
         {
-            Destroy(collision.gameObject);
-            InstantiateTail();   
-        }
-        if(collision.tag == "MassBurner")
-        {
-            Destroy(collision.gameObject);
-            DecreaseTail();
-        }
-        if(collision.tag == "Tail")
-        {
-            SceneManager.LoadScene(0);
+            case "MassGainer":
+                Destroy(collision.gameObject);
+                ModifyTail(1, true);
+                break;
+            case "MassBurner":
+                Destroy(collision.gameObject);
+                ModifyTail(1, false);
+                break;
+            case "Tail":
+                SceneManager.LoadScene(0);
+                break;
         }
     }
 }
