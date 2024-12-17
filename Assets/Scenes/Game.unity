@@ -157,6 +157,7 @@ MonoBehaviour:
   massBurnerPrefab: {fileID: 269763149572258516, guid: 3d3b9293894c0c74a80eacdaf2c07e40, type: 3}
   snakeController: {fileID: 391238995}
   spawnInterval: 3
+  minDistanceBetweenFoods: 2
 --- !u!4 &19168509
 Transform:
   m_ObjectHideFlags: 0
@@ -221,7 +222,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.011594772, y: 0.012853622}
+  m_Offset: {x: 0.006796837, y: 0.001493454}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -232,7 +233,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 53.99869, y: 28.16853}
+  m_Size: {x: 39.485046, y: 18.614765}
   m_EdgeRadius: 0
 --- !u!4 &56226190
 Transform:
@@ -244,7 +245,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.85858, y: 0.85858, z: 0.85858}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -511,7 +512,7 @@ MonoBehaviour:
   bottomWall: {fileID: 699528586}
   leftWall: {fileID: 77371697}
   rightWall: {fileID: 907490162}
-  tailPreFab: {fileID: 4860657647627576198, guid: 94eb52a8b0654ed4f9b23144453f5a0a, type: 3}
+  tailPrefab: {fileID: 4860657647627576198, guid: 94eb52a8b0654ed4f9b23144453f5a0a, type: 3}
 --- !u!58 &391238996
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -608,7 +609,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 17
+  orthographic size: 12
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1009,7 +1010,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.62954235, y: 0.60217094, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 77371699}

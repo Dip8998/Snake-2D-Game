@@ -9,6 +9,10 @@ public class FoodController : MonoBehaviour
     [SerializeField] private GameObject massBurnerPrefab;
     [SerializeField] private SnakeController snakeController;
     [SerializeField] private float spawnInterval = 3.0f;
+    [SerializeField] private float minDistanceBetweenFoods = 2.0f;
+
+    private List<GameObject> activeFoods = new List<GameObject>();
+
     private void Start()
     {
         StartCoroutine(AutoFoodGeneration());
@@ -19,31 +23,51 @@ public class FoodController : MonoBehaviour
         while (true)
         {
             SpawnFood();
-            float foodInterval = Random.Range(1.5f,spawnInterval);
-            yield return new WaitForSeconds(foodInterval);
+            yield return new WaitForSeconds(Random.Range(1.5f, spawnInterval));
         }
     }
 
-    public void SpawnFood()
+    private void SpawnFood()
+    {
+        Vector2 randomPosition = GetValidPosition();
+        GameObject prefab = snakeController.GetSnakeSize() > 1 && Random.Range(0f, 1f) > 0.7f ? massBurnerPrefab : massGainerPrefab;
+        GameObject food = Instantiate(prefab, randomPosition, Quaternion.identity);
+        activeFoods.Add(food);
+        Destroy(food, 10);
+        StartCoroutine(RemoveFoodAfterDelay(food, 10));
+    }
+
+    private Vector2 GetValidPosition()
     {
         Bounds bounds = gridArea.bounds;
-        float x = Random.Range(bounds.min.x, bounds.max.x);
-        float y = Random.Range(bounds.min.y, bounds.max.y);
-        Vector2 randomPosition = new Vector2(Mathf.Round(x), Mathf.Round(y));
+        int attempts = 0;
+        Vector2 position;
 
-        GameObject foodToSpawn;
+        do
+        {
+            float x = Mathf.Round(Random.Range(bounds.min.x, bounds.max.x));
+            float y = Mathf.Round(Random.Range(bounds.min.y, bounds.max.y));
+            position = new Vector2(x, y);
+            attempts++;
+        }
+        while (!IsPositionValid(position) && attempts < 10);
 
-        if(snakeController.GetSnakeSize() > 1)
+        return position;
+    }
+
+    private bool IsPositionValid(Vector2 position)
+    {
+        foreach (var food in activeFoods)
         {
-            foodToSpawn = Random.Range(0f, 1f) > 0.5f ? massGainerPrefab : massBurnerPrefab;
-            GameObject spawnFood = Instantiate(foodToSpawn, randomPosition, Quaternion.identity);
-            Destroy(spawnFood, 10);
+            if (food != null && Vector2.Distance(food.transform.position, position) < minDistanceBetweenFoods)
+                return false;
         }
-        else
-        {
-            foodToSpawn = massGainerPrefab;
-            GameObject spawnFood = Instantiate(foodToSpawn, randomPosition, Quaternion.identity);
-            Destroy(spawnFood, 10);
-        }
+        return true;
+    }
+
+    private IEnumerator RemoveFoodAfterDelay(GameObject food, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        activeFoods.Remove(food);
     }
 }
