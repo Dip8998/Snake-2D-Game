@@ -1,10 +1,11 @@
 # Snake-2D-Game
- About the Game
+
+# About the Game
 This Snake Game is a modern twist on the classic snake genre, where players grow, compete, and use power-ups to outmaneuver challenges.
 
-Features
+#Features
 Player Controls:
-Player 1: WASD keys for movement.
+**Player 1: WASD keys for movement.**
 Player 2: Arrow keys for movement.
 Snake Growth: Collect food to grow the snake's tail.
 Food Types:
@@ -29,7 +30,7 @@ Open the project in Unity.
 Ensure all assets and dependencies are imported correctly.
 Press the Play button in Unity Editor to start the game.
 How to Play
-Use the assigned controls to navigate your snake.
+Use the assigned controls to navigate your snake. 
 Collect food to grow and increase your score.
 Avoid collisions with your tail, the walls, and the other player.
 Use power-ups strategically to gain advantages.
