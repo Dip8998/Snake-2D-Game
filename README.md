@@ -1,5 +1,9 @@
 # Snake-2D-Game  
 
+## Video of Gameplay
+Watch the gameplay in action here:  
+[Gameplay Video](https://drive.google.com/file/d/1YOPtqHYdaWOdP-ucOiji8sEmk9tZQE9I/view?usp=sharing)
+
 ## About the Game  
 This Snake Game is a modern twist on the classic snake genre, where players grow, compete, and use power-ups to outmaneuver challenges.  
 
@@ -31,8 +35,6 @@ This Snake Game is a modern twist on the classic snake genre, where players grow
 - **Audio Feedback:** Sounds for food collection, power-up activation, and game-over events.  
 - **Pause Menu:** Pause, resume, or restart the game and navigate to the main menu.
 
-## Video of Gameplay
-Watch the gameplay in action here:  
-[Gameplay Video](https://drive.google.com/file/d/1YOPtqHYdaWOdP-ucOiji8sEmk9tZQE9I/view?usp=sharing)
+
 
 
