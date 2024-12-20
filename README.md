@@ -33,6 +33,6 @@ This Snake Game is a modern twist on the classic snake genre, where players grow
 
 ## Video of Gameplay
 Watch the gameplay in action here:  
-[![Gameplay Video](https://drive.google.com/file/d/1YOPtqHYdaWOdP-ucOiji8sEmk9tZQE9I/view?usp=sharing)
+[Gameplay Video](https://drive.google.com/file/d/1YOPtqHYdaWOdP-ucOiji8sEmk9tZQE9I/view?usp=sharing)
 
 
