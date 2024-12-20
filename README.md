@@ -29,9 +29,10 @@ This Snake Game is a modern twist on the classic snake genre, where players grow
 - **Scoring System:** Tracks and updates scores dynamically for both players.  
 - **Multiplayer Support:** Allows two players to compete simultaneously.  
 - **Audio Feedback:** Sounds for food collection, power-up activation, and game-over events.  
-- **Pause Menu:** Pause, resume, or restart the game and navigate to the main menu.  
+- **Pause Menu:** Pause, resume, or restart the game and navigate to the main menu.
 
-## Installation and Setup  
-1. Clone this repository:  
-   ```bash  
-   git clone <repo-url>  
+## Video of Gameplay
+Watch the gameplay in action here:  
+[![Gameplay Video](https://drive.google.com/file/d/1YOPtqHYdaWOdP-ucOiji8sEmk9tZQE9I/view?usp=sharing)
+
+
