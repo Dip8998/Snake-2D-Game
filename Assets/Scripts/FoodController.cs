@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class FoodController : MonoBehaviour
@@ -40,19 +40,23 @@ public class FoodController : MonoBehaviour
     private Vector2 GetValidPosition()
     {
         Bounds bounds = gridArea.bounds;
-        int attempts = 0;
-        Vector2 position;
+        int maxAttempts = 20;
+        Vector2 position = Vector2.zero;
 
-        do
+        for (int i = 0; i < maxAttempts; i++)
         {
             float x = Mathf.Round(Random.Range(bounds.min.x, bounds.max.x));
             float y = Mathf.Round(Random.Range(bounds.min.y, bounds.max.y));
             position = new Vector2(x, y);
-            attempts++;
-        }
-        while (!IsPositionValid(position) && attempts < 10);
 
-        return position;
+            if (IsPositionValid(position))
+                return position;
+        }
+
+        return new Vector2(
+            Mathf.Round(Random.Range(bounds.min.x, bounds.max.x)),
+            Mathf.Round(Random.Range(bounds.min.y, bounds.max.y))
+        );
     }
 
     private bool IsPositionValid(Vector2 position)

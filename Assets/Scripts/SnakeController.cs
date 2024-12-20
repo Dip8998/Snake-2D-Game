@@ -1,30 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SnakeController : MonoBehaviour
 {
     [SerializeField] private ScoreController scoreController;
+    [SerializeField] private GameObject gameOverPanelSnake1;
+    [SerializeField] private GameObject gameOverPanelSnake2;
+    [SerializeField] private GameOverController gameOverController;
+    [SerializeField] private PowerUpController powerUpController;
+    [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject upperWall;
     [SerializeField] private GameObject bottomWall;
     [SerializeField] private GameObject leftWall;
     [SerializeField] private GameObject rightWall;
-    [SerializeField] private GameObject shield;
     [SerializeField] private Transform tailPrefab;
-    [SerializeField] private bool isSnake1;
+    public GameObject shield;
+    public bool isSnake1;
 
     private Vector2 snakeDir = Vector2.right;
     private List<Transform> tails;
     private bool isWrapping = false;
     private bool canChangeDir = true;
-    private bool hasShield = false;
-    private bool hasScoreBooster = false;
-    private float speedBoostDuration = 5f;
-    
+   
+
     private void Start()
     {
+        Time.fixedDeltaTime = 0.08f;
         tails = new List<Transform> { transform };
+      
     }
 
     private void Update()
@@ -74,10 +81,10 @@ public class SnakeController : MonoBehaviour
         }
 
         transform.position = new Vector3(
-           Mathf.Round(transform.position.x) + snakeDir.x,
-           Mathf.Round(transform.position.y) + snakeDir.y,
-           0.0f
-       );
+            Mathf.Round(transform.position.x) + snakeDir.x,
+            Mathf.Round(transform.position.y) + snakeDir.y,
+            0.0f
+        );
     }
 
     private void HandleWrapping()
@@ -140,67 +147,115 @@ public class SnakeController : MonoBehaviour
         return tails != null ? tails.Count : 0;
     }
 
-    private IEnumerator ActivateShield(float delay)
+    private void Scored()
     {
-        hasShield = true;
-        shield.gameObject.SetActive(true);
-        yield return new WaitForSeconds(delay);
-        hasShield = false;
-        shield.gameObject.SetActive(false);
+        int n = 10;
+        if (!powerUpController.HasScoreBoost(this) && isSnake1)
+        {
+            scoreController.IncreaseScore(isSnake1,n);
+        }
+        if (powerUpController.HasScoreBoost(this) && isSnake1)
+        {
+
+            scoreController.IncreaseScore(isSnake1,n * 2);
+        }
+        if (!powerUpController.HasScoreBoost(this) && !isSnake1)
+        {
+            scoreController.IncreaseScore(isSnake1, n);
+        }
+        if (powerUpController.HasScoreBoost(this) && !isSnake1)
+        {
+
+            scoreController.IncreaseScore(isSnake1, n * 2);
+        }
+
     }
 
-    private IEnumerator ActivateSpeedBoost(float duration)
-    {
-        Time.fixedDeltaTime = 0.03f;
-        yield return new WaitForSeconds(duration);
-        Time.fixedDeltaTime = 0.07f; 
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void HandlePowerUpCollision(Collider2D collision)
     {
         switch (collision.tag)
         {
             case "MassGainer":
-                if (hasScoreBooster == false)
-                {
-                    Destroy(collision.gameObject);
-                    ModifyTail(1, true);
-                    scoreController.IncreaseScore(10);
-                }
+                SoundController.Instance.Play(Sounds.MassGainerEats);
+                Destroy(collision.gameObject);
+                ModifyTail(1, true);
+                Scored();
                 break;
+
             case "MassBurner":
-                if (hasScoreBooster == false)
+                if (!powerUpController.HasShield(this))
                 {
+                    SoundController.Instance.Play(Sounds.MassBurnerEats);
                     Destroy(collision.gameObject);
                     ModifyTail(1, false);
-                    scoreController.DecreaseScore(10);
+                    scoreController.DecreaseScore(isSnake1, 10);
                 }
                 break;
-            case "Tail":
-                if (hasShield == false)
-                {
-                    SceneManager.LoadScene(0);
-                    Time.fixedDeltaTime = 0.07f;
-                }
-                break;
+
             case "Shield":
+                SoundController.Instance.Play(Sounds.PowerUpsCollect);
                 Destroy(collision.gameObject);
-                StartCoroutine(ActivateShield(5f));
+                powerUpController.ActivateShield(this, 5f);
                 break;
+
             case "ScoreBoost":
+                SoundController.Instance.Play(Sounds.PowerUpsCollect);
                 Destroy(collision.gameObject);
-                scoreController.ActivateScoreBooster(5f);
+                powerUpController.ActivateScoreBoost(this, 5f);
                 break;
+
             case "SpeedBoost":
+                SoundController.Instance.Play(Sounds.PowerUpsCollect);
                 Destroy(collision.gameObject);
-                StartCoroutine(ActivateSpeedBoost(speedBoostDuration));
-                break;
-            case "Player2":
-                if(hasShield == false)
-                {
-                    SceneManager.LoadScene(1);
-                }
+                powerUpController.ActivateSpeedBoost(this, 5f);
                 break;
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isSnake1)
+        {
+            if (collision.tag == "Tail" && !powerUpController.HasShield(this))
+            {
+               gameOverPanelSnake1.SetActive(true);
+               SoundController.Instance.Play(Sounds.GameOver);
+                Time.timeScale = 0f;
+            }
+            else if (collision.tag == "Player2")
+            {
+                if (!powerUpController.HasShield(this))
+                {
+                    gameOverPanel.SetActive(true);
+                    SoundController.Instance.Play(Sounds.GameOver);
+                    Time.timeScale = 0f;
+                }
+            }
+            else
+            {
+                HandlePowerUpCollision(collision);
+            }
+        }
+        else
+        {
+            if (collision.tag == "Tail" && !powerUpController.HasShield(this))
+            {
+                gameOverPanelSnake2.SetActive(true);
+                SoundController.Instance.Play(Sounds.GameOver);
+                Time.timeScale = 0f;
+            }
+            else if (collision.tag == "Player" && !powerUpController.HasShield(this))
+            {
+                gameOverPanel.SetActive(true);
+                SoundController.Instance.Play(Sounds.GameOver);
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                HandlePowerUpCollision(collision);
+            }
+        }
+    }
+
+
 }

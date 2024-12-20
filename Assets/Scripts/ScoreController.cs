@@ -4,45 +4,57 @@ using UnityEngine;
 
 public class ScoreController : MonoBehaviour
 {
-    private TextMeshProUGUI scoreText;
-    private int score;
-    private bool isScoreBoosterActive = false;
-    private void Awake()
+    [SerializeField] private TextMeshProUGUI snake1ScoreText; 
+    [SerializeField] private TextMeshProUGUI snake2ScoreText; 
+
+    private int snake1Score = 0;
+    private int snake2Score = 0;
+
+    private void Start()
     {
-        scoreText = GetComponent<TextMeshProUGUI>();
         ResetUI();
     }
 
-    public void IncreaseScore(int increment)
+    public void IncreaseScore(bool isSnake1, int increment)
     {
-        if (isScoreBoosterActive)
+        if (isSnake1)
         {
-            increment *= 2;  
+            snake1Score += increment;
         }
-        score += increment;
+        else
+        {
+            snake2Score += increment;
+        }
         ResetUI();
     }
 
-    public void DecreaseScore(int decrement)
+    public void DecreaseScore(bool isSnake1, int decrement)
     {
-        score -= decrement;
+        if (isSnake1)
+        {
+            if(snake1Score > 0)
+            {
+                snake1Score -= decrement;
+            }
+        }
+        else
+        {
+            if(snake2Score > 0)
+            {
+                snake2Score -= decrement;
+            }
+        }
         ResetUI();
     }
 
     private void ResetUI()
     {
-        scoreText.text = "Score: " + score;
+        snake1ScoreText.text = "Score: " + snake1Score;
+        snake2ScoreText.text = "Score: " + snake2Score;
     }
 
-    public void ActivateScoreBooster(float duration)
+    public int GetScore(bool isSnake1)
     {
-        isScoreBoosterActive = true;
-        StartCoroutine(DeactivateScoreBooster(duration));
-    }
-
-    private IEnumerator DeactivateScoreBooster(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        isScoreBoosterActive = false;
+        return isSnake1 ? snake1Score : snake2Score;
     }
 }
