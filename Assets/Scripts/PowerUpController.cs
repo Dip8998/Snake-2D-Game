@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,14 +24,15 @@ public class PowerUpController : MonoBehaviour
     [SerializeField] private Image scoreBoostIconSnake2;
 
     private Dictionary<SnakeController, PowerUpState> snakeStates = new();
+    public List<SnakeController> Snakes;
 
     private void Start()
     {
         StartCoroutine(SpawnPowerUps());
 
-        foreach (var snakeController in FindObjectsOfType<SnakeController>())
+        foreach (SnakeController snakeController in Snakes)
         {
-            snakeStates[snakeController] = new PowerUpState();
+            snakeStates.Add(snakeController, new PowerUpState());
         }
 
         SetIconTransparency(speedIconSnake1, true);
@@ -69,7 +71,7 @@ public class PowerUpController : MonoBehaviour
 
     public void ActivateShield(SnakeController snake, float duration)
     {
-        var state = snakeStates[snake];
+        PowerUpState state = snakeStates[snake];
         if (state.HasShield) return;
 
         state.HasShield = true;
@@ -84,40 +86,36 @@ public class PowerUpController : MonoBehaviour
 
         yield return new WaitForSeconds(delay);
 
-        var state = snakeStates[snake];
+        PowerUpState state = snakeStates[snake];
         state.HasShield = false;
 
         SetIconTransparency(snake.isSnake1 ? shieldIconSnake1 : shieldIconSnake2, true);
         snake.shield.gameObject.SetActive(false);
     }
 
-    public void ActivateSpeedBoost(SnakeController snake, float duration)
+    public void ActivateSpeedBoost(SnakeController snake, float duration, float moveInterval)
     {
-        var state = snakeStates[snake];
+        PowerUpState state = snakeStates[snake];
         if (state.HasSpeedBoost) return;
-
+        float orgMove = moveInterval;
+        moveInterval = 0.1f;
         state.HasSpeedBoost = true;
         SetIconTransparency(snake.isSnake1 ? speedIconSnake1 : speedIconSnake2, false);
-
-        Time.fixedDeltaTime = 0.05f;
-
-        StartCoroutine(DeactivateSpeedBoost(snake, duration));
+        StartCoroutine(DeactivateSpeedBoost(snake, duration,orgMove,moveInterval));
     }
 
-    private IEnumerator DeactivateSpeedBoost(SnakeController snake, float delay)
+    private IEnumerator DeactivateSpeedBoost(SnakeController snake, float delay, float orgMove, float moveInterval)
     {
         yield return new WaitForSeconds(delay);
-
-        var state = snakeStates[snake];
+        moveInterval = orgMove;
+        PowerUpState state = snakeStates[snake];
         state.HasSpeedBoost = false;
-
-        Time.fixedDeltaTime = 0.08f;
         SetIconTransparency(snake.isSnake1 ? speedIconSnake1 : speedIconSnake2, true);
     }
 
     public void ActivateScoreBoost(SnakeController snake, float duration)
     {
-        var state = snakeStates[snake];
+        PowerUpState state = snakeStates[snake];
         if (state.HasScoreBooster) return;
 
         state.HasScoreBooster = true;
@@ -130,7 +128,7 @@ public class PowerUpController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        var state = snakeStates[snake];
+        PowerUpState state = snakeStates[snake];
         state.HasScoreBooster = false;
 
         SetIconTransparency(snake.isSnake1 ? scoreBoostIconSnake1 : scoreBoostIconSnake2, true);

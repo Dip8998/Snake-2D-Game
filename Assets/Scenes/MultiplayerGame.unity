@@ -153,8 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridArea: {fileID: 56226189}
-  massGainerPrefab: {fileID: 2103851913710205062, guid: 187c760e3d7af2a4faa7b0a763374444, type: 3}
-  massBurnerPrefab: {fileID: 269763149572258516, guid: 3d3b9293894c0c74a80eacdaf2c07e40, type: 3}
+  massGainerPrefab: {fileID: 4479050694292293683, guid: 187c760e3d7af2a4faa7b0a763374444, type: 3}
+  massBurnerPrefab: {fileID: -2987278396186243710, guid: 3d3b9293894c0c74a80eacdaf2c07e40, type: 3}
   snakeController: {fileID: 391238995}
   spawnInterval: 3
   minDistanceBetweenFoods: 2
@@ -804,11 +804,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreController: {fileID: 2021175391}
-  gameOverPanelSnake1: {fileID: 1878572202}
-  gameOverPanelSnake2: {fileID: 2490824228661007851}
+  gameOverPanelforSnake1: {fileID: 1878572202}
+  gameOverPanelforSnake2: {fileID: 2490824228661007851}
   gameOverController: {fileID: 1878572206}
   powerUpController: {fileID: 1555277320}
-  gameOverPanel: {fileID: 1329916024}
+  gameOverPanelforTie: {fileID: 1329916024}
   upperWall: {fileID: 734513852}
   bottomWall: {fileID: 699528586}
   leftWall: {fileID: 77371697}
@@ -2784,11 +2784,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreController: {fileID: 2021175391}
-  gameOverPanelSnake1: {fileID: 1878572202}
-  gameOverPanelSnake2: {fileID: 2490824228661007851}
+  gameOverPanelforSnake1: {fileID: 1878572202}
+  gameOverPanelforSnake2: {fileID: 2490824228661007851}
   gameOverController: {fileID: 1878572206}
   powerUpController: {fileID: 1555277320}
-  gameOverPanel: {fileID: 1329916024}
+  gameOverPanelforTie: {fileID: 1329916024}
   upperWall: {fileID: 734513852}
   bottomWall: {fileID: 699528586}
   leftWall: {fileID: 77371697}
@@ -3462,6 +3462,9 @@ MonoBehaviour:
   speedIconSnake2: {fileID: 2150254220563133103}
   shieldIconSnake2: {fileID: 2324443980111345504}
   scoreBoostIconSnake2: {fileID: 8979860808997031486}
+  Snakes:
+  - {fileID: 391238995}
+  - {fileID: 1332877524}
 --- !u!4 &1555277322
 Transform:
   m_ObjectHideFlags: 0
@@ -4657,10 +4660,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3

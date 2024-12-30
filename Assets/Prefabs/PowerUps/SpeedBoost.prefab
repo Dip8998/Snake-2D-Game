@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8790218967266878680}
   - component: {fileID: 5835288426372516351}
   - component: {fileID: 2810456271261494794}
+  - component: {fileID: -9118310946157640701}
   m_Layer: 0
   m_Name: SpeedBoost
   m_TagString: SpeedBoost
@@ -120,3 +121,16 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 2.1
+--- !u!114 &-9118310946157640701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2263554180877700525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 416eb4e39ba7dfb4bbe7b42306834e93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: SpeedBoost

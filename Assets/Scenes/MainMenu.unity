@@ -1830,10 +1830,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -1939,10 +1939,6 @@ MonoBehaviour:
   - soundTypes: 2
     audioClip: {fileID: 8300000, guid: 2456565e6cfc59647b60e09cb772bb5a, type: 3}
   - soundTypes: 3
-    audioClip: {fileID: 8300000, guid: 2456565e6cfc59647b60e09cb772bb5a, type: 3}
-  - soundTypes: 4
-    audioClip: {fileID: 8300000, guid: 3a22886c96b23444ca22ed0dd43eb0aa, type: 3}
-  - soundTypes: 5
     audioClip: {fileID: 8300000, guid: 350588b3c0aa13c45b9a155e9a33a217, type: 3}
 --- !u!4 &2039139345
 Transform:
