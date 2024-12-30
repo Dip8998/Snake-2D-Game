@@ -8,11 +8,11 @@ using UnityEngine.UI;
 public class SnakeController : MonoBehaviour
 {
     [SerializeField] private ScoreController scoreController;
-    [SerializeField] private GameObject gameOverPanelSnake1;
-    [SerializeField] private GameObject gameOverPanelSnake2;
+    [SerializeField] private GameObject gameOverPanelforSnake1;
+    [SerializeField] private GameObject gameOverPanelforSnake2;
     [SerializeField] private GameOverController gameOverController;
     [SerializeField] private PowerUpController powerUpController;
-    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject gameOverPanelforTie;
     [SerializeField] private GameObject upperWall;
     [SerializeField] private GameObject bottomWall;
     [SerializeField] private GameObject leftWall;
@@ -25,13 +25,15 @@ public class SnakeController : MonoBehaviour
     private List<Transform> tails;
     private bool isWrapping = false;
     private bool canChangeDir = true;
-   
 
+    private float baseMoveInterval = 0.2f; 
+    private float moveInterval;
+    private float nextMoveTime;
     private void Start()
     {
-        Time.fixedDeltaTime = 0.08f;
         tails = new List<Transform> { transform };
-      
+        moveInterval = baseMoveInterval;
+        nextMoveTime = Time.time;
     }
 
     private void Update()
@@ -70,6 +72,7 @@ public class SnakeController : MonoBehaviour
     {
         MoveSnake();
         HandleWrapping();
+        nextMoveTime = Time.time + moveInterval;
         canChangeDir = true;
     }
 
@@ -149,111 +152,81 @@ public class SnakeController : MonoBehaviour
 
     private void Scored()
     {
+        int scoreMultiplier = powerUpController.HasScoreBoost(this) ? 2 : 1;
         int n = 10;
-        if (!powerUpController.HasScoreBoost(this) && isSnake1)
-        {
-            scoreController.IncreaseScore(isSnake1,n);
-        }
-        if (powerUpController.HasScoreBoost(this) && isSnake1)
-        {
-
-            scoreController.IncreaseScore(isSnake1,n * 2);
-        }
-        if (!powerUpController.HasScoreBoost(this) && !isSnake1)
-        {
-            scoreController.IncreaseScore(isSnake1, n);
-        }
-        if (powerUpController.HasScoreBoost(this) && !isSnake1)
-        {
-
-            scoreController.IncreaseScore(isSnake1, n * 2);
-        }
-
+        scoreController.IncreaseScore(isSnake1, n * scoreMultiplier);
     }
+
 
     private void HandlePowerUpCollision(Collider2D collision)
     {
-        switch (collision.tag)
+        ItemController item = collision.GetComponent<ItemController>();
+        if (item == null) return;
+
+        switch (item.GetName())
         {
             case "MassGainer":
-                SoundController.Instance.Play(Sounds.MassGainerEats);
-                Destroy(collision.gameObject);
                 ModifyTail(1, true);
                 Scored();
                 break;
 
             case "MassBurner":
-                if (!powerUpController.HasShield(this))
-                {
-                    SoundController.Instance.Play(Sounds.MassBurnerEats);
-                    Destroy(collision.gameObject);
-                    ModifyTail(1, false);
-                    scoreController.DecreaseScore(isSnake1, 10);
-                }
+                if (powerUpController.HasShield(this)) return;
+                ModifyTail(1, false);
+                scoreController.DecreaseScore(isSnake1, 10);
                 break;
 
             case "Shield":
-                SoundController.Instance.Play(Sounds.PowerUpsCollect);
-                Destroy(collision.gameObject);
                 powerUpController.ActivateShield(this, 5f);
                 break;
 
             case "ScoreBoost":
-                SoundController.Instance.Play(Sounds.PowerUpsCollect);
-                Destroy(collision.gameObject);
                 powerUpController.ActivateScoreBoost(this, 5f);
                 break;
 
             case "SpeedBoost":
-                SoundController.Instance.Play(Sounds.PowerUpsCollect);
-                Destroy(collision.gameObject);
-                powerUpController.ActivateSpeedBoost(this, 5f);
+                powerUpController.ActivateSpeedBoost(this, 5f, moveInterval);
                 break;
         }
+
+        SoundController.Instance.Play(Sounds.EatsSound);
+        Destroy(collision.gameObject);
     }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isSnake1)
+        bool isPowerUp = true;
+
+        if (!powerUpController.HasShield(this))
         {
-            if (collision.tag == "Tail" && !powerUpController.HasShield(this))
+            if (collision.tag == "Tail")
             {
-               gameOverPanelSnake1.SetActive(true);
-               SoundController.Instance.Play(Sounds.GameOver);
-                Time.timeScale = 0f;
-            }
-            else if (collision.tag == "Player2")
-            {
-                if (!powerUpController.HasShield(this))
+                if (isSnake1)
                 {
-                    gameOverPanel.SetActive(true);
-                    SoundController.Instance.Play(Sounds.GameOver);
-                    Time.timeScale = 0f;
+                    gameOverPanelforSnake1.SetActive(true);
                 }
+                else
+                {
+                    gameOverPanelforSnake2.SetActive(true);
+                }
+                isPowerUp = false;
             }
-            else
+            else if ((collision.tag == "Player2" && isSnake1) || (collision.tag == "Player" && !isSnake1))
             {
-                HandlePowerUpCollision(collision);
+                gameOverPanelforTie.SetActive(true);
+                isPowerUp = false;
             }
+        }
+
+        if (!isPowerUp)
+        {
+            SoundController.Instance.Play(Sounds.GameOver);
+            Time.timeScale = 0f;
         }
         else
         {
-            if (collision.tag == "Tail" && !powerUpController.HasShield(this))
-            {
-                gameOverPanelSnake2.SetActive(true);
-                SoundController.Instance.Play(Sounds.GameOver);
-                Time.timeScale = 0f;
-            }
-            else if (collision.tag == "Player" && !powerUpController.HasShield(this))
-            {
-                gameOverPanel.SetActive(true);
-                SoundController.Instance.Play(Sounds.GameOver);
-                Time.timeScale = 0f;
-            }
-            else
-            {
-                HandlePowerUpCollision(collision);
-            }
+            HandlePowerUpCollision(collision);
         }
     }
 

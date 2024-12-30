@@ -2,8 +2,6 @@ public enum Sounds
 {
     ButtonClick,
     BGMusic,
-    MassGainerEats,
-    MassBurnerEats,
-    PowerUpsCollect,
+    EatsSound,
     GameOver
 }

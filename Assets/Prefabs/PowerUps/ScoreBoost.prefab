@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6859119974084735506}
   - component: {fileID: 4353637096372336184}
   - component: {fileID: 4484157461776667459}
+  - component: {fileID: -1317271201540619507}
   m_Layer: 0
   m_Name: ScoreBoost
   m_TagString: ScoreBoost
@@ -120,3 +121,16 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1.07
+--- !u!114 &-1317271201540619507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2327656018512972219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 416eb4e39ba7dfb4bbe7b42306834e93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: ScoreBoost

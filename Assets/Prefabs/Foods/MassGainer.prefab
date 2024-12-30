@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5166994579756580769}
   - component: {fileID: 5543789202076652347}
   - component: {fileID: 5938244828155781294}
+  - component: {fileID: 4479050694292293683}
   m_Layer: 0
   m_Name: MassGainer
   m_TagString: MassGainer
@@ -130,3 +131,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.07, y: 2.1493015}
   m_EdgeRadius: 0
+--- !u!114 &4479050694292293683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103851913710205062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 416eb4e39ba7dfb4bbe7b42306834e93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: MassGainer

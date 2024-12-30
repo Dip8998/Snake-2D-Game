@@ -5,13 +5,13 @@ using UnityEngine;
 public class FoodController : MonoBehaviour
 {
     [SerializeField] private BoxCollider2D gridArea;
-    [SerializeField] private GameObject massGainerPrefab;
-    [SerializeField] private GameObject massBurnerPrefab;
+    [SerializeField] private ItemController massGainerPrefab;
+    [SerializeField] private ItemController massBurnerPrefab;
     [SerializeField] private SnakeController snakeController;
     [SerializeField] private float spawnInterval = 3.0f;
     [SerializeField] private float minDistanceBetweenFoods = 2.0f;
 
-    private List<GameObject> activeFoods = new List<GameObject>();
+    private List<ItemController> activeFoods = new List<ItemController>();
 
     private void Start()
     {
@@ -20,18 +20,16 @@ public class FoodController : MonoBehaviour
 
     private IEnumerator AutoFoodGeneration()
     {
-        while (true)
-        {
-            SpawnFood();
-            yield return new WaitForSeconds(Random.Range(1.5f, spawnInterval));
-        }
+        SpawnFood();
+        yield return new WaitForSeconds(Random.Range(1.5f, spawnInterval));
+        StartCoroutine(AutoFoodGeneration());
     }
 
     private void SpawnFood()
     {
         Vector2 randomPosition = GetValidPosition();
-        GameObject prefab = snakeController.GetSnakeSize() > 1 && Random.Range(0f, 1f) > 0.7f ? massBurnerPrefab : massGainerPrefab;
-        GameObject food = Instantiate(prefab, randomPosition, Quaternion.identity);
+        ItemController prefab = snakeController.GetSnakeSize() > 1 && Random.Range(0f, 1f) > 0.7f ? massBurnerPrefab : massGainerPrefab;
+        ItemController food = Instantiate(prefab, randomPosition, Quaternion.identity);
         activeFoods.Add(food);
         Destroy(food, 10);
         StartCoroutine(RemoveFoodAfterDelay(food, 10));
@@ -69,7 +67,7 @@ public class FoodController : MonoBehaviour
         return true;
     }
 
-    private IEnumerator RemoveFoodAfterDelay(GameObject food, float delay)
+    private IEnumerator RemoveFoodAfterDelay(ItemController food, float delay)
     {
         yield return new WaitForSeconds(delay);
         activeFoods.Remove(food);
