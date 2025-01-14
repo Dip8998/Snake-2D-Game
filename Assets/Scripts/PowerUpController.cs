@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 public class PowerUpState
 {
@@ -11,6 +9,7 @@ public class PowerUpState
     public bool HasSpeedBoost { get; set; }
     public bool HasScoreBooster { get; set; }
 }
+
 public class PowerUpController : MonoBehaviour
 {
     [SerializeField] private GameObject[] powerUps;
@@ -26,30 +25,27 @@ public class PowerUpController : MonoBehaviour
     private Dictionary<SnakeController, PowerUpState> snakeStates = new();
     public List<SnakeController> Snakes;
 
+    private float spawnTimer;
+
     private void Start()
     {
-        StartCoroutine(SpawnPowerUps());
-
-        foreach (SnakeController snakeController in Snakes)
+        foreach (SnakeController snake in Snakes)
         {
-            snakeStates.Add(snakeController, new PowerUpState());
+            snakeStates.Add(snake,new PowerUpState());
         }
 
-        SetIconTransparency(speedIconSnake1, true);
-        SetIconTransparency(shieldIconSnake1, true);
-        SetIconTransparency(scoreBoostIconSnake1, true);
-        SetIconTransparency(speedIconSnake2, true);
-        SetIconTransparency(shieldIconSnake2, true);
-        SetIconTransparency(scoreBoostIconSnake2, true);
+        ResetIcons();
+        spawnTimer = spawnInterval;
     }
 
-    private IEnumerator SpawnPowerUps()
+    private void Update()
     {
-        while (true)
+        spawnTimer -= Time.deltaTime;
+
+        if (spawnTimer <= 0f)
         {
-            float randInterval = Random.Range(spawnInterval, 10f);
-            yield return new WaitForSeconds(randInterval);
             SpawnPowerUp();
+            spawnTimer = Random.Range(spawnInterval, 10f);
         }
     }
 
@@ -71,67 +67,84 @@ public class PowerUpController : MonoBehaviour
 
     public void ActivateShield(SnakeController snake, float duration)
     {
-        PowerUpState state = snakeStates[snake];
-        if (state.HasShield) return;
+        if (snakeStates.ContainsKey(snake) && !snakeStates[snake].HasShield)
+        {
+            snakeStates[snake].HasShield = true;
+            SetIconTransparency(snake.isSnake1 ? shieldIconSnake1 : shieldIconSnake2, false);
+            snake.shield.gameObject.SetActive(true);
 
-        state.HasShield = true;
-        SetIconTransparency(snake.isSnake1 ? shieldIconSnake1 : shieldIconSnake2, false);
-        snake.shield.gameObject.SetActive(true);
-
-        StartCoroutine(DeactivateShield(snake, duration));
+            StartCoroutine(DeactivateShieldAfterDelay(snake, duration));
+        }
     }
 
-    private IEnumerator DeactivateShield(SnakeController snake, float delay)
+    private IEnumerator DeactivateShieldAfterDelay(SnakeController snake, float delay)
     {
-
         yield return new WaitForSeconds(delay);
 
-        PowerUpState state = snakeStates[snake];
-        state.HasShield = false;
-
-        SetIconTransparency(snake.isSnake1 ? shieldIconSnake1 : shieldIconSnake2, true);
-        snake.shield.gameObject.SetActive(false);
+        if (snakeStates.ContainsKey(snake))
+        {
+            snakeStates[snake].HasShield = false;
+            SetIconTransparency(snake.isSnake1 ? shieldIconSnake1 : shieldIconSnake2, true);
+            snake.shield.gameObject.SetActive(false);
+        }
     }
 
     public void ActivateSpeedBoost(SnakeController snake, float duration, float moveInterval)
     {
-        PowerUpState state = snakeStates[snake];
-        if (state.HasSpeedBoost) return;
-        float orgMove = moveInterval;
-        moveInterval = 0.1f;
-        state.HasSpeedBoost = true;
-        SetIconTransparency(snake.isSnake1 ? speedIconSnake1 : speedIconSnake2, false);
-        StartCoroutine(DeactivateSpeedBoost(snake, duration,orgMove,moveInterval));
+        if (snakeStates.ContainsKey(snake) && !snakeStates[snake].HasSpeedBoost)
+        {
+            float originalInterval = moveInterval;
+            moveInterval = 0.1f;
+
+            snakeStates[snake].HasSpeedBoost = true;
+            SetIconTransparency(snake.isSnake1 ? speedIconSnake1 : speedIconSnake2, false);
+
+            StartCoroutine(DeactivateSpeedBoostAfterDelay(snake, duration, moveInterval, originalInterval));
+        }
     }
 
-    private IEnumerator DeactivateSpeedBoost(SnakeController snake, float delay, float orgMove, float moveInterval)
+    private IEnumerator DeactivateSpeedBoostAfterDelay(SnakeController snake, float delay, float moveInterval, float originalInterval)
     {
         yield return new WaitForSeconds(delay);
-        moveInterval = orgMove;
-        PowerUpState state = snakeStates[snake];
-        state.HasSpeedBoost = false;
-        SetIconTransparency(snake.isSnake1 ? speedIconSnake1 : speedIconSnake2, true);
+
+        if (snakeStates.ContainsKey(snake)) 
+        {
+            moveInterval = originalInterval;
+            snakeStates[snake].HasSpeedBoost = false;
+            SetIconTransparency(snake.isSnake1 ? speedIconSnake1 : speedIconSnake2, true);
+        }
     }
 
     public void ActivateScoreBoost(SnakeController snake, float duration)
     {
-        PowerUpState state = snakeStates[snake];
-        if (state.HasScoreBooster) return;
+        if (snakeStates.ContainsKey(snake) && !snakeStates[snake].HasScoreBooster)
+        {
+            snakeStates[snake].HasScoreBooster = true;
+            SetIconTransparency(snake.isSnake1 ? scoreBoostIconSnake1 : scoreBoostIconSnake2, false);
 
-        state.HasScoreBooster = true;
-        SetIconTransparency(snake.isSnake1 ? scoreBoostIconSnake1 : scoreBoostIconSnake2, false);
-
-        StartCoroutine(DeactivateScoreBoost(snake, duration));
+            StartCoroutine(DeactivateScoreBoostAfterDelay(snake, duration));
+        }
     }
 
-    private IEnumerator DeactivateScoreBoost(SnakeController snake, float delay)
+    private IEnumerator DeactivateScoreBoostAfterDelay(SnakeController snake, float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        PowerUpState state = snakeStates[snake];
-        state.HasScoreBooster = false;
+        if (snakeStates.ContainsKey(snake)) 
+        {
+            snakeStates[snake].HasScoreBooster = false;
+            SetIconTransparency(snake.isSnake1 ? scoreBoostIconSnake1 : scoreBoostIconSnake2, true);
+        }
+    }
 
-        SetIconTransparency(snake.isSnake1 ? scoreBoostIconSnake1 : scoreBoostIconSnake2, true);
+    private void ResetIcons()
+    {
+        SetIconTransparency(speedIconSnake1, true);
+        SetIconTransparency(shieldIconSnake1, true);
+        SetIconTransparency(scoreBoostIconSnake1, true);
+        SetIconTransparency(speedIconSnake2, true);
+        SetIconTransparency(shieldIconSnake2, true);
+        SetIconTransparency(scoreBoostIconSnake2, true);
     }
 
     private void SetIconTransparency(Image icon, bool transparent)
@@ -141,8 +154,18 @@ public class PowerUpController : MonoBehaviour
         icon.color = color;
     }
 
-    public bool HasShield(SnakeController snake) => snakeStates[snake].HasShield;
-    public bool HasSpeedBoost(SnakeController snake) => snakeStates[snake].HasSpeedBoost;
-    public bool HasScoreBoost(SnakeController snake) => snakeStates[snake].HasScoreBooster;
-}
+    public bool HasShield(SnakeController snake)
+    {
+        return snakeStates.ContainsKey(snake) && snakeStates[snake].HasShield;
+    }
 
+    public bool HasSpeedBoost(SnakeController snake)
+    {
+        return snakeStates.ContainsKey(snake) && snakeStates[snake].HasSpeedBoost;
+    }
+
+    public bool HasScoreBoost(SnakeController snake)
+    {
+        return snakeStates.ContainsKey(snake) && snakeStates[snake].HasScoreBooster;
+    }
+}

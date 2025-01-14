@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections;
 using UnityEngine;
 
 public class FoodController : MonoBehaviour
@@ -12,17 +11,22 @@ public class FoodController : MonoBehaviour
     [SerializeField] private float minDistanceBetweenFoods = 2.0f;
 
     private List<ItemController> activeFoods = new List<ItemController>();
+    private float spawnTimer;
 
     private void Start()
     {
-        StartCoroutine(AutoFoodGeneration());
+        spawnTimer = spawnInterval;
     }
 
-    private IEnumerator AutoFoodGeneration()
+    private void Update()
     {
-        SpawnFood();
-        yield return new WaitForSeconds(Random.Range(1.5f, spawnInterval));
-        StartCoroutine(AutoFoodGeneration());
+        spawnTimer -= Time.deltaTime;
+
+        if (spawnTimer <= 0)
+        {
+            SpawnFood();
+            spawnTimer = Random.Range(1.5f, spawnInterval);
+        }
     }
 
     private void SpawnFood()
@@ -31,21 +35,21 @@ public class FoodController : MonoBehaviour
         ItemController prefab = snakeController.GetSnakeSize() > 1 && Random.Range(0f, 1f) > 0.7f ? massBurnerPrefab : massGainerPrefab;
         ItemController food = Instantiate(prefab, randomPosition, Quaternion.identity);
         activeFoods.Add(food);
-        Destroy(food, 10);
-        StartCoroutine(RemoveFoodAfterDelay(food, 10));
+
+        Destroy(food.gameObject, 10f);
+        Invoke(nameof(RemoveOldFood), 10f);
     }
 
     private Vector2 GetValidPosition()
     {
         Bounds bounds = gridArea.bounds;
         int maxAttempts = 20;
-        Vector2 position = Vector2.zero;
 
         for (int i = 0; i < maxAttempts; i++)
         {
             float x = Mathf.Round(Random.Range(bounds.min.x, bounds.max.x));
             float y = Mathf.Round(Random.Range(bounds.min.y, bounds.max.y));
-            position = new Vector2(x, y);
+            Vector2 position = new Vector2(x, y);
 
             if (IsPositionValid(position))
                 return position;
@@ -59,7 +63,7 @@ public class FoodController : MonoBehaviour
 
     private bool IsPositionValid(Vector2 position)
     {
-        foreach (var food in activeFoods)
+        foreach (ItemController food in activeFoods)
         {
             if (food != null && Vector2.Distance(food.transform.position, position) < minDistanceBetweenFoods)
                 return false;
@@ -67,9 +71,8 @@ public class FoodController : MonoBehaviour
         return true;
     }
 
-    private IEnumerator RemoveFoodAfterDelay(ItemController food, float delay)
+    private void RemoveOldFood()
     {
-        yield return new WaitForSeconds(delay);
-        activeFoods.Remove(food);
+        activeFoods.RemoveAll(food => food == null);
     }
 }
