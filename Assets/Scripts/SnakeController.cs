@@ -70,10 +70,13 @@ public class SnakeController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MoveSnake();
-        HandleWrapping();
-        nextMoveTime = Time.time + moveInterval;
-        canChangeDir = true;
+        if (Time.time >= nextMoveTime)
+        {
+            MoveSnake();
+            HandleWrapping();
+            nextMoveTime = Time.time + moveInterval; 
+            canChangeDir = true;
+        }
     }
 
     private void MoveSnake()

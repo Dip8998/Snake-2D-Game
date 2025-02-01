@@ -2786,15 +2786,15 @@ MonoBehaviour:
   scoreController: {fileID: 2021175391}
   gameOverPanelforSnake1: {fileID: 1878572202}
   gameOverPanelforSnake2: {fileID: 2490824228661007851}
-  gameOverController: {fileID: 1878572206}
+  gameOverController: {fileID: 2152141429323037562}
   powerUpController: {fileID: 1555277320}
   gameOverPanelforTie: {fileID: 1329916024}
   upperWall: {fileID: 734513852}
   bottomWall: {fileID: 699528586}
   leftWall: {fileID: 77371697}
   rightWall: {fileID: 907490162}
-  tailPrefab: {fileID: 4860657647627576198, guid: 4a85c50c99f7b3446be3d19cf9afa263, type: 3}
-  shield: {fileID: 317611092}
+  tailPrefab: {fileID: 4860657647627576198, guid: 94eb52a8b0654ed4f9b23144453f5a0a, type: 3}
+  shield: {fileID: 1430216563}
   isSnake1: 0
 --- !u!50 &1332877525
 Rigidbody2D:

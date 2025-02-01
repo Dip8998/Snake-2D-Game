@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,7 +38,7 @@ public class FoodController : MonoBehaviour
         activeFoods.Add(food);
 
         Destroy(food.gameObject, 10f);
-        Invoke(nameof(RemoveOldFood), 10f);
+        StartCoroutine(RemoveOldFood());
     }
 
     private Vector2 GetValidPosition()
@@ -71,8 +72,9 @@ public class FoodController : MonoBehaviour
         return true;
     }
 
-    private void RemoveOldFood()
+    private IEnumerator RemoveOldFood()
     {
+        yield return new WaitForSeconds(10f);
         activeFoods.RemoveAll(food => food == null);
     }
 }
